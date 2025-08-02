@@ -1,0 +1,177 @@
+@import "tailwindcss";
+
+:root {
+  user-select: none;
+  --background: #000000; 
+  --foreground: #ffffff;
+  --navbar-bg-color: #222222;
+  --width-of-input: 200px;
+  --border-height: 2px;
+  --border-before-color: rgb(255, 255, 255);
+  --border-after-color: #83a088;
+  --input-hovered-color: #4985e01f;
+
+    /* --default variation only 👇 */
+  --select-icon-size: 16px;
+  --select-icon-margin: 1rem; /* icon right/left position */
+  --select-text-icon-gap: 0.5rem; /* gap between text and icon */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #000000;
+    --foreground: #ffffff;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.form {
+  @apply w-[90%] flex flex-col justify-center items-start relative;
+  width: var(--width-of-input);
+  caret-color: white;
+}
+
+.finput {
+  @apply w-full font-sans text-white text-[16px] box-border px-2 py-3 border-none border-b resize-y overflow-auto bg-transparent;
+  font-family: 'HelveticaMedium', Arial, sans-serif;
+  border-bottom: var(--border-height) solid var(--border-before-color);
+}
+
+.finput[type="text"] {
+  @apply font-sans text-[18px];
+  font-family: 'HelveticaMedium', Arial, sans-serif;
+}
+
+.finput[type="password"] {
+  @apply text-[18px];
+}
+
+.finput[type="number"] {
+  @apply bg-[#222] text-[#ddd];
+}
+
+.finput[type="number"]::-webkit-inner-spin-button,
+.finput[type="number"]::-webkit-outer-spin-button {
+  background-color: #222;
+  color: #ddd;
+}
+
+.finput::placeholder {
+  @apply font-sans text-[18px] text-[#999];
+  font-family: 'HelveticaMedium', Arial, sans-serif;
+}
+
+.finput:hover {
+  background: var(--input-hovered-color);
+}
+.finput:focus {
+  @apply outline-none shadow-none;
+}
+
+.iborder {
+  @apply absolute left-0 bottom-0 transition-all;
+  background: var(--border-after-color);
+  width: 0%;
+  height: 2px;
+}
+
+.finput:focus ~ .iborder {
+  width: 100%;
+}
+
+.submit {
+  @apply relative overflow-hidden border border-[#333333] text-white inline-block text-[15px] leading-[15px] px-[31px] pt-[18px] pb-[17px] no-underline cursor-pointer bg-[#333333];
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.submit span:first-child {
+  @apply relative z-[10] transition-colors;
+  transition: color 600ms cubic-bezier(0.48, 0, 0.12, 1);
+}
+
+.submit span:last-child {
+  @apply block absolute left-1/2 bottom-0 h-[14px] leading-[13px] z-[100] text-black opacity-0;
+  transition: all 500ms cubic-bezier(0.48, 0, 0.12, 1);
+  top: 50%;
+  transform: translateY(225%) translateX(-50%);
+}
+
+.submit:after {
+  content: "";
+  @apply absolute left-0 bottom-[-50%] w-full h-full z-[50] bg-white;
+  transform-origin: bottom center;
+  transition: transform 600ms cubic-bezier(0.48, 0, 0.12, 1);
+  transform: skewY(9.3deg) scaleY(0);
+}
+
+.submit:hover:after {
+  transform-origin: bottom center;
+  transform: skewY(9.3deg) scaleY(2);
+}
+
+.submit:hover span:last-child {
+  transform: translateX(-50%) translateY(-50%);
+  opacity: 1;
+  transition: all 900ms cubic-bezier(0.48, 0, 0.12, 1);
+}
+
+.radiogroup-h {
+  @apply flex flex-col items-center bg-[#222] gap-[0.7rem] cursor-pointer;
+}
+
+.title-h {
+  @apply text-white cursor-pointer text-center;
+}
+
+.options-h {
+  @apply flex flex-row gap-8 justify-center;
+}
+
+.radioitem-h {
+  @apply flex flex-col items-center cursor-pointer gap-2;
+}
+
+.radioitem-h input[type="radio"] {
+  @apply -order-1 w-5 h-5;
+  accent-color: #83a088;
+}
+
+
+.radiolabeltext-h {
+  @apply text-[1.7rem] text-white;
+}
+
+.radiogroup-v {
+  @apply flex flex-col bg-[#222] p-4 gap-4 cursor-pointer;
+}
+
+.textlabel-v {
+  @apply text-white cursor-pointer text-center;
+}
+
+.radioitem-v {
+  @apply flex items-center gap-2 cursor-pointer;
+}
+
+.radioitem-v input[type='radio'] {
+  @apply -order-1 w-5 h-5;
+  accent-color: hsl(130, 13%, 57%);
+}
+
+.radiolabeltext-v {
+  @apply text-white;
+}
