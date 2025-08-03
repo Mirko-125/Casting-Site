@@ -1,6 +1,6 @@
-import { address, registerBase, returnBase } from "@/misc/routes"
+import { address, registerBase, returnBase, uploadProfilePic, downloadProfilePic } from "@/misc/routes"
 
-export interface UserDraft {
+export interface BaseUser {
   firstName:   string;
   lastName:    string;
   username:    string;
@@ -12,8 +12,8 @@ export interface UserDraft {
   position:    string;
 }
 
-export interface UserPartial {
-  id:          number;
+export interface BaseUserResponse {
+  id:          string;
   firstName:   string;
   lastName:    string;
   username:    string;
@@ -24,8 +24,8 @@ export interface UserPartial {
   position:    string;
 }
 
-export const startDraftUser = async (
-  dto: UserDraft
+export const registerBaseUser = async (
+  dto: BaseUser
 ): Promise<Response> => {
   const res = await fetch(address + registerBase, {
     method: "POST",
@@ -38,9 +38,9 @@ export const startDraftUser = async (
   return res;
 }
 
-export const fetchUserByToken = async (
+export const getUserByRegistrationToken = async (
   token: string
-): Promise<UserPartial | null> => {
+): Promise<BaseUserResponse | null> => {
   const res = await fetch(
     address + returnBase,
     {
@@ -52,7 +52,7 @@ export const fetchUserByToken = async (
   );
 
   if (res.ok) {
-    const data = (await res.json()) as UserPartial | null;
+    const data = (await res.json()) as BaseUserResponse | null;
     return data;
   } else if (res.status === 404) {
     return null;
@@ -61,3 +61,38 @@ export const fetchUserByToken = async (
     throw new Error(err.message || res.statusText);
   }
 }
+
+export const uploadProfilePhoto = async (userId: string, file: File): Promise<string | null> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch(address + uploadProfilePic +`?userId=${userId}`, {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+    });
+
+    if (res.ok) {
+        const data = await res.json();
+        return data.filename || data.path || null;
+    } else {
+        const err = await res.json().catch(() => ({})) as { message?: string };
+        throw new Error(err.message || res.statusText);
+    }
+}
+
+export const getProfilePhoto = async (userId: string): Promise<string | null> => {
+    const res = await fetch(address + downloadProfilePic +`?userId=${userId}`, {
+        method: "GET",
+    });
+
+    if (res.ok) {
+        const blob = await res.blob();
+        return URL.createObjectURL(blob);
+    } else if (res.status === 404) {
+        return null;
+    } else {
+        const err = await res.json().catch(() => ({})) as { message?: string };
+        throw new Error(err.message || res.statusText);
+    }
+  }

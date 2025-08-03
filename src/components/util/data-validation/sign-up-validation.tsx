@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useRef, useEffect, useState } from "react";
 
-import { UserDraft, startDraftUser } from "@/lib/api/users";
+import { BaseUser, registerBaseUser } from "@/lib/api/users";
 import { useSessionStorage } from "@/hooks/sessionstorage";
 import { regex } from "@/misc/regular-expressions";
 
@@ -39,7 +39,7 @@ export const SignUpValidation = (props: SignUpValidationProps) => {
     didSubmit.current = true;
     const [firstName, ...rest] = props.user.fullname.trim().split(" ");
     const lastName = rest.join(" ");
-    const payload: UserDraft = {
+    const payload: BaseUser = {
       firstName,
       lastName,
       username: props.user.username,
@@ -51,7 +51,7 @@ export const SignUpValidation = (props: SignUpValidationProps) => {
       position: props.user.position,
     };
     try {
-      const response = await startDraftUser(payload);
+      const response = await registerBaseUser(payload);
       if (!response.ok) {
         const ct = response.headers.get("content-type") || "";
         let errMsg = `Request failed with status ${response.status}`;

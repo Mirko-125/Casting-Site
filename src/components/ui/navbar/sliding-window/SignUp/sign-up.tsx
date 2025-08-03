@@ -123,7 +123,7 @@ const SignUp = (props: SignUpProps) => {
               type="text"
               name="phonenumber"
               onChange={handleChange}
-              placeholder="+ (code) (number)"
+              placeholder="+[code][your number]"
             />
             <span className="iborder"></span>
           </div>

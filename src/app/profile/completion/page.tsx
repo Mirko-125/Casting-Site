@@ -1,8 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { fetchUserByToken, UserPartial } from "@/lib/api/users";
+import {
+  BaseUserResponse,
+  getUserByRegistrationToken,
+  uploadProfilePhoto,
+  getProfilePhoto,
+} from "@/lib/api/users";
 import { useSessionStorage } from "@/hooks/sessionstorage";
 import "flag-icons/css/flag-icons.min.css";
 import { HoverTooltip } from "@/components/ui/overlays/hover-tooltip"; // client component
@@ -15,9 +20,51 @@ import {
 
 const Page = () => {
   const [token] = useSessionStorage("registration_token", "");
-  const [user, setUser] = useState<UserPartial | null>(null);
+  const [user, setUser] = useState<BaseUserResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  const onButtonClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const onFileChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    userId: string
+  ) => {
+    e.preventDefault();
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const uploadedFilename = await uploadProfilePhoto(userId, file);
+      if (uploadedFilename) {
+        const newPreviewUrl = await getProfilePhoto(userId);
+        setPreviewUrl(newPreviewUrl);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      const fetchInitialPreview = async () => {
+        try {
+          const initialUrl = await getProfilePhoto(user.id);
+          if (initialUrl) {
+            // Only set previewUrl if it's not null
+            setPreviewUrl(initialUrl);
+          }
+        } catch (error) {
+          console.error("Error fetching initial preview:", error);
+        }
+      };
+
+      fetchInitialPreview();
+    }
+  }, [user]);
 
   useEffect(() => {
     if (!token) {
@@ -25,7 +72,7 @@ const Page = () => {
       return;
     }
 
-    fetchUserByToken(token)
+    getUserByRegistrationToken(token)
       .then((u) => {
         if (!u) {
           router.push("/");
@@ -66,16 +113,29 @@ const Page = () => {
                     src={contact}
                     alt="Contact"
                   />
-                  <span className="hidden">{`Id: ${user.id}\nE-Mail: ${user.eMail}\nPhone: ${user.phoneNumber}`}</span>
+                  <span className="hidden">{`E-Mail: ${user.eMail}\nPhone: ${user.phoneNumber}`}</span>
                 </div>
               </HoverTooltip>
             </div>
             <div className="flex flex-col items-center justify-around h-full gap-6">
-              <div className="w-[180px] h-[180px] sm:w-[220px] sm:h-[220px] md:w-[250px] md:h-[250px] border-[5px] border-[#83a088] bg-[#FFFFFF] transition-[background-color,border-color,box-shadow] m-[16px] sm:m-[20px] md:m-[23px]" />
-              <button
-                className="submit"
-                onClick={() => console.log("you can do it")}
-              >
+              <div className="relative w-[180px] h-[180px] sm:w-[220px] sm:h-[220px] md:w-[250px] md:h-[250px] border-[5px] border-[#83a088] bg-[#FFFFFF] transition-[background-color,border-color,box-shadow] m-[16px] sm:m-[20px] md:m-[23px]">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  onChange={(event) => onFileChange(event, user.id)}
+                />
+                {previewUrl && (
+                  <Image
+                    key={previewUrl}
+                    src={previewUrl}
+                    alt="Alt image"
+                    fill
+                    style={{ objectFit: "cover", objectPosition: "center" }}
+                  />
+                )}
+              </div>
+              <button type="button" className="submit" onClick={onButtonClick}>
                 <span className="text-white">Upload your picture</span>
                 <span className="text-black">Go for it!</span>
               </button>
