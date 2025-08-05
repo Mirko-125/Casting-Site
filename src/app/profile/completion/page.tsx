@@ -7,6 +7,7 @@ import {
   getUserByRegistrationToken,
   uploadProfilePhoto,
   getProfilePhoto,
+  getProfilePhotoMetadata,
 } from "@/lib/api/users";
 import { useSessionStorage } from "@/hooks/sessionstorage";
 import "flag-icons/css/flag-icons.min.css";
@@ -17,6 +18,7 @@ import {
   RoleSpecificFormSelector,
   UserRole,
 } from "@/components/ui/forms/role-specific-form-selector";
+import { useDataContext } from "@/context/DataContext";
 
 const Page = () => {
   const [token] = useSessionStorage("registration_token", "");
@@ -25,6 +27,15 @@ const Page = () => {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const { latestPayload } = useDataContext();
+  const [pfpMetadata, setPfpMetadata] = useState<string>("");
+
+  useEffect(() => {
+    if (!latestPayload) return;
+    console.log(user);
+    console.log(pfpMetadata);
+    console.log(latestPayload);
+  }, [latestPayload]);
 
   const onButtonClick = () => {
     fileInputRef.current?.click();
@@ -41,7 +52,9 @@ const Page = () => {
       const uploadedFilename = await uploadProfilePhoto(userId, file);
       if (uploadedFilename) {
         const newPreviewUrl = await getProfilePhoto(userId);
+        const imageMetadata = await getProfilePhotoMetadata(userId);
         setPreviewUrl(newPreviewUrl);
+        if (imageMetadata) setPfpMetadata(imageMetadata);
       }
     } catch (error) {
       console.error(error);
@@ -156,7 +169,7 @@ const Page = () => {
             </div>
 
             <div className="flex flex-row w-full max-w-md">
-              <div className="flex flex-col w-full max-w-md">
+              <div className="flex flex-col justify-end w-full max-w-md">
                 <label className="text-2xl text-[#999999]">Sex</label>
                 <label className="text-4xl">{user.gender.toUpperCase()}</label>
               </div>
@@ -167,10 +180,10 @@ const Page = () => {
             </div>
           </div>
         </div>
-        <div>
+        <div className="flex flex-col items-center justify-center flex-grow mt-16 ">
           <RoleSpecificFormSelector
             role={user.position as UserRole}
-            identifier={user.username}
+            user={user}
           />
         </div>
       </div>

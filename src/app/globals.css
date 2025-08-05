@@ -44,7 +44,7 @@ body {
 }
 
 .finput {
-  @apply w-full font-sans text-white text-[16px] box-border px-2 py-3 border-none border-b resize-y overflow-auto bg-transparent;
+  @apply w-full font-sans text-white text-[16px] box-border px-2 py-3 border-none border-b resize-none overflow-auto bg-transparent;
   font-family: 'HelveticaMedium', Arial, sans-serif;
   border-bottom: var(--border-height) solid var(--border-before-color);
 }
@@ -59,13 +59,12 @@ body {
 }
 
 .finput[type="number"] {
-  @apply bg-[#222] text-[#ddd];
+  @apply bg-[#222] text-[#ffffff];
 }
 
-.finput[type="number"]::-webkit-inner-spin-button,
-.finput[type="number"]::-webkit-outer-spin-button {
-  background-color: #222;
-  color: #ddd;
+.finput[type="date"] {
+  @apply bg-[#222] text-[#ffffff];
+  text-align: center;
 }
 
 .finput::placeholder {
@@ -127,6 +126,25 @@ body {
   transform: translateX(-50%) translateY(-50%);
   opacity: 1;
   transition: all 900ms cubic-bezier(0.48, 0, 0.12, 1);
+}
+
+.submit:disabled{
+  cursor: not-allowed;
+  background-color: #222222;
+  border-color: #222222;
+}
+
+.submit:disabled span{
+  color: #aaaaaa;
+  text-decoration-line: line-through;
+}
+
+.submit:disabled span:last-child{
+  visibility: hidden;
+}
+
+.submit:disabled:after {
+  visibility: hidden;
 }
 
 .radiogroup-h {

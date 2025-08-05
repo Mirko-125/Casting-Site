@@ -1,8 +1,9 @@
 import dynamic from "next/dynamic";
 import { ComponentType } from "react";
+import { BaseUserCache } from "@/lib/api/users";
 
 export interface RoleSpecificFormSelectorProps {
-  identifier: string;
+  user: BaseUserCache;
   role: UserRole;
 }
 
@@ -15,7 +16,7 @@ export interface UserRoleMap {
 export type UserRole = UserRoleMap[keyof UserRoleMap];
 
 export interface FormProps {
-  identifier: string;
+  user: BaseUserCache;
 }
 
 const ActorForm = dynamic<FormProps>(
@@ -42,9 +43,9 @@ const roleComponentMap: Record<UserRole, ComponentType<FormProps>> = {
 };
 
 export const RoleSpecificFormSelector = ({
-  identifier,
+  user,
   role,
 }: RoleSpecificFormSelectorProps) => {
   const FormComponent = roleComponentMap[role];
-  return <FormComponent identifier={identifier} />;
+  return <FormComponent user={user} />;
 };

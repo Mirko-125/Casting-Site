@@ -7,7 +7,7 @@ interface DropdownMenuProps {
 export const DropdownMenu = (props: DropdownMenuProps) => {
   return (
     <div className="flex justify-center items-center p-2">
-      <div className="w-52 md:w-[240px] bg-[#222222] p-4">
+      <div className="w-52 md:w-[240px] p-4">
         <label className="block text-white">{props.title}</label>
         <select
           className="block w-full mt-1 focus:outline-none bg-[#333333] p-2"

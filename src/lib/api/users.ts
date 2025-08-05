@@ -1,4 +1,4 @@
-import { address, registerBase, returnBase, uploadProfilePic, downloadProfilePic } from "@/misc/routes"
+import { address, registerBase, returnBase, uploadProfilePic, downloadProfilePic, metadataProfilePic } from "@/misc/routes"
 
 export interface BaseUser {
   firstName:   string;
@@ -96,3 +96,24 @@ export const getProfilePhoto = async (userId: string): Promise<string | null> =>
         throw new Error(err.message || res.statusText);
     }
   }
+
+export const getProfilePhotoMetadata = async (
+  userId: string
+): Promise<string | null> => {
+  const res = await fetch(address + metadataProfilePic + `?userId=${userId}`, {
+    method: "GET",
+    headers: {
+      "Accept": "application/json"
+    }
+  });
+
+  if (res.ok) {
+    const data = (await res.json()) as string;
+    return data;
+  } else if (res.status === 404) {
+    return null;
+  } else {
+    const err = (await res.json().catch(() => ({}))) as { message?: string };
+    throw new Error(err.message || res.statusText);
+  }
+};
