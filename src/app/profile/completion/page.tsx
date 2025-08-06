@@ -18,7 +18,7 @@ import {
   RoleSpecificFormSelector,
   UserRole,
 } from "@/components/ui/forms/role-specific-form-selector";
-import { useDataContext } from "@/context/DataContext";
+import { useDataContext } from "@/context/data-context";
 
 const Page = () => {
   const [token] = useSessionStorage("registration_token", "");

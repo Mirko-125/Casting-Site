@@ -24,6 +24,18 @@ export interface BaseUserResponse {
   position:    string;
 }
 
+export interface BaseUserCache {
+  id:          string;
+  firstName:   string;
+  lastName:    string;
+  username:    string;
+  nationality: string;
+  gender:      string;
+  phoneNumber: string;
+  eMail:       string;
+  position:    string;
+}
+
 export const registerBaseUser = async (
   dto: BaseUser
 ): Promise<Response> => {

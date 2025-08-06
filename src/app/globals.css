@@ -193,3 +193,6 @@ body {
 .radiolabeltext-v {
   @apply text-white;
 }
+.translate-center {
+  transform: translate(-50%, -50%);
+}
