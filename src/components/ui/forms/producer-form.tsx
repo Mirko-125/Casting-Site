@@ -2,25 +2,18 @@ import { useState } from "react";
 import { FormProps } from "@/components/ui/forms/role-specific-form-selector";
 import FileButton from "@/components/ui/buttons/single-buttons/file-button";
 import { FloatingWindow } from "@/components/ui/overlays/floating-window"; // client component
+import { ProductionForm } from "@/components/ui/forms/production-form";
 
 const ProducerForm = ({ user }: FormProps) => {
   const [windowOpen, setWindowOpen] = useState<boolean>();
-  const [key, setKey] = useState<number>(0);
-
-  const openWindow = () => {
-    setKey((k) => k + 1);
-    setWindowOpen(true);
-  };
 
   return (
     <div>
       {windowOpen && (
-        <FloatingWindow
-          key={key}
-          id={`win-${user.id}-${key}`}
-          onClose={() => setWindowOpen(false)}
-        >
-          <div className="space-y-4"></div>
+        <FloatingWindow onClose={() => setWindowOpen(false)}>
+          <div className="space-y-4">
+            <ProductionForm user={user} />
+          </div>
         </FloatingWindow>
       )}
       {windowOpen && (
@@ -53,7 +46,10 @@ const ProducerForm = ({ user }: FormProps) => {
             />
             <span className="iborder"></span>
           </div>
-          <FileButton title="Create production" onClick={openWindow} />
+          <FileButton
+            title="Create production"
+            onClick={() => setWindowOpen(true)}
+          />
           <button
             type="button"
             className="submit"

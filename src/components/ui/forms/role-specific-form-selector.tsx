@@ -1,10 +1,4 @@
 import dynamic from "next/dynamic";
-import {
-  DndContext,
-  useSensor,
-  useSensors,
-  PointerSensor,
-} from "@dnd-kit/core";
 import { ComponentType } from "react";
 import { BaseUserCache } from "@/lib/api/users";
 
@@ -52,14 +46,6 @@ export const RoleSpecificFormSelector = ({
   user,
   role,
 }: RoleSpecificFormSelectorProps) => {
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 1 } })
-  );
-
   const FormComponent = roleComponentMap[role];
-  return (
-    <DndContext sensors={sensors}>
-      <FormComponent user={user} />
-    </DndContext>
-  );
+  return <FormComponent user={user} />;
 };
