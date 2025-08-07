@@ -86,6 +86,7 @@ body {
   height: 2px;
 }
 
+
 .finput:focus ~ .iborder {
   width: 100%;
 }

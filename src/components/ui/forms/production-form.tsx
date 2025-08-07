@@ -57,9 +57,9 @@ export const ProductionForm = (props: ProducerFormProps) => {
                 <label>About the production</label>
                 <textarea
                   className="finput"
-                  name="bio"
+                  name="about"
                   rows={5}
-                  placeholder="Write your bio here..."
+                  placeholder="About production..."
                   maxLength={2000}
                 />
                 <span className="iborder"></span>
