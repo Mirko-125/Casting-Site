@@ -2,9 +2,14 @@ import { BaseUserCache } from "@/lib/api/users";
 
 export interface ProducerFormProps {
   user: BaseUserCache;
+  onDone: (pid: string) => void;
 }
 
 export const ProductionForm = (props: ProducerFormProps) => {
+  const handleSubmit = () => {
+    props.onDone("Enshuldingung");
+  };
+
   return (
     <div className="w-full flex justify-center px-4">
       <div className="w-full max-w-5xl">
@@ -71,7 +76,7 @@ export const ProductionForm = (props: ProducerFormProps) => {
           <button
             type="button"
             className="submit submit--cobalt"
-            onClick={() => console.log("")}
+            onClick={handleSubmit}
           >
             <span className="text-white">Create production</span>
             <span className="text-black">Action!</span>

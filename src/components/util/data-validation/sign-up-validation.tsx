@@ -34,7 +34,7 @@ export const SignUpValidation = (props: SignUpValidationProps) => {
   const submit = async (props: SignUpValidationProps) => {
     if (didSubmit.current) {
       props.onDone();
-      return; // Better safe than sorry |
+      return; // | Better safe than sorry |
     }
     didSubmit.current = true;
     const [firstName, ...rest] = props.user.fullname.trim().split(" ");

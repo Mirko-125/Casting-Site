@@ -11,6 +11,7 @@ export interface ProducerExtras {
 
 const ProducerForm = ({ user }: FormProps) => {
   const [windowOpen, setWindowOpen] = useState<boolean>();
+  const [productionId, setProductionId] = useState<string>();
   const [producerExtras, setProducerExtras] = useState<ProducerExtras>({
     testcase: "cameleon",
   });
@@ -21,12 +22,18 @@ const ProducerForm = ({ user }: FormProps) => {
   const handleSubmit = () => {
     upliftData(producerExtras);
   };
+
+  const handleCallback = (pid: string) => {
+    setProductionId(pid);
+    console.log(pid);
+  };
+
   return (
     <div>
       {windowOpen && (
         <FloatingWindow onClose={() => setWindowOpen(false)}>
           <div className="space-y-4">
-            <ProductionForm user={user} />
+            <ProductionForm user={user} onDone={handleCallback} />
           </div>
         </FloatingWindow>
       )}
