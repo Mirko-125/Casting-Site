@@ -6,7 +6,7 @@ import { useDataContext } from "@/context/data-context";
 export interface ActorExtras {
   height: number;
   weight: number;
-  dateOfBirth: Date;
+  dateOfBirth: string;
   bio: string;
 }
 
@@ -14,7 +14,7 @@ const ActorForm = ({ user }: FormProps) => {
   const [actorExtras, setActorExtras] = useState<ActorExtras>({
     height: 0,
     weight: 0,
-    dateOfBirth: new Date(1910, 0, 1),
+    dateOfBirth: "",
     bio: "",
   });
   const { upliftData } = useDataContext();

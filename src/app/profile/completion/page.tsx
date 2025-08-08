@@ -7,7 +7,6 @@ import {
   getUserByRegistrationToken,
   uploadProfilePhoto,
   getProfilePhoto,
-  getProfilePhotoMetadata,
 } from "@/lib/api/users";
 import { useSessionStorage } from "@/hooks/sessionstorage";
 import "flag-icons/css/flag-icons.min.css";
@@ -19,6 +18,8 @@ import {
   UserRole,
 } from "@/components/ui/forms/role-specific-form-selector";
 import { useDataContext } from "@/context/data-context";
+import { registerActorUser } from "@/lib/api/users";
+import { ActorExtras } from "@/components/ui/forms/actor-form";
 
 const Page = () => {
   const [token] = useSessionStorage("registration_token", "");
@@ -28,12 +29,38 @@ const Page = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { latestPayload } = useDataContext();
-  const [pfpMetadata, setPfpMetadata] = useState<string>("");
+
+  const testActor = async (latestPayload: ActorExtras) => {
+    // Clean this | sort it out for the other users too
+    try {
+      const response = await registerActorUser(latestPayload);
+      if (response.ok) {
+        console.log("check azure data studio");
+        router.push("/");
+      }
+    } catch (error) {
+      console.error("Registration failed:", error);
+    }
+  };
 
   useEffect(() => {
     if (!latestPayload) return;
-    console.log(user);
-    console.log(pfpMetadata);
+    switch (user?.position) {
+      case "actor":
+        testActor(latestPayload);
+        break;
+      case "director":
+        // | soon
+        break;
+      case "castingdirector":
+        // | soon
+        break;
+      case "producer":
+        // | soon
+        break;
+      default:
+        break;
+    }
     console.log(latestPayload);
   }, [latestPayload]);
 
@@ -52,9 +79,7 @@ const Page = () => {
       const uploadedFilename = await uploadProfilePhoto(userId, file);
       if (uploadedFilename) {
         const newPreviewUrl = await getProfilePhoto(userId);
-        const imageMetadata = await getProfilePhotoMetadata(userId);
         setPreviewUrl(newPreviewUrl);
-        if (imageMetadata) setPfpMetadata(imageMetadata);
       }
     } catch (error) {
       console.error(error);
@@ -67,7 +92,7 @@ const Page = () => {
         try {
           const initialUrl = await getProfilePhoto(user.id);
           if (initialUrl) {
-            // Only set previewUrl if it's not null
+            // | Only set previewUrl if it's not null
             setPreviewUrl(initialUrl);
           }
         } catch (error) {

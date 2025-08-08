@@ -1,4 +1,5 @@
-import { address, registerBase, returnBase, uploadProfilePic, downloadProfilePic, metadataProfilePic } from "@/misc/routes"
+import { address, registerBase, returnBase, uploadProfilePic, downloadProfilePic, registerActor } from "@/misc/routes"
+import { formatDateString } from "@/lib/helpers/datehelper";
 
 export interface BaseUser {
   firstName:   string;
@@ -34,6 +35,13 @@ export interface BaseUserCache {
   phoneNumber: string;
   eMail:       string;
   position:    string;
+}
+
+export interface ActorDTO {
+    height: number;
+    weight: number;
+    bio: string;
+    dateOfBirth: string; 
 }
 
 export const registerBaseUser = async (
@@ -109,23 +117,33 @@ export const getProfilePhoto = async (userId: string): Promise<string | null> =>
     }
   }
 
-export const getProfilePhotoMetadata = async (
-  userId: string
-): Promise<string | null> => {
-  const res = await fetch(address + metadataProfilePic + `?userId=${userId}`, {
-    method: "GET",
-    headers: {
-      "Accept": "application/json"
-    }
-  });
+export const registerActorUser = async (
+    actorData: ActorDTO
+): Promise<Response> => {
+    try {
+        const formattedDate = formatDateString(actorData.dateOfBirth);
+        const payload = {
+            ...actorData,
+            dateOfBirth: formattedDate
+        };
 
-  if (res.ok) {
-    const data = (await res.json()) as string;
-    return data;
-  } else if (res.status === 404) {
-    return null;
-  } else {
-    const err = (await res.json().catch(() => ({}))) as { message?: string };
-    throw new Error(err.message || res.statusText);
-  }
-};
+        const res = await fetch(address + registerActor, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload),
+            credentials: "include" 
+        });
+
+        if (!res.ok) {
+            const errorData = await res.json().catch(() => ({}));
+            throw new Error(errorData.message || "Actor registration failed");
+        }
+
+        return res;
+    } catch (error) {
+        console.error("Actor registration error:", error);
+        throw new Error((error as Error).message || "Network error");
+    }
+}
