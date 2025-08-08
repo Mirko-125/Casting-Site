@@ -30,10 +30,9 @@ const Page = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { latestPayload } = useDataContext();
 
-  const testActor = async (latestPayload: ActorExtras) => {
-    // Clean this | sort it out for the other users too
+  const actorRegistration = async (payload: ActorExtras) => {
     try {
-      const response = await registerActorUser(latestPayload);
+      const response = await registerActorUser(payload);
       if (response.ok) {
         console.log("check azure data studio");
         router.push("/");
@@ -45,9 +44,9 @@ const Page = () => {
 
   useEffect(() => {
     if (!latestPayload) return;
-    switch (user?.position) {
+    switch (user !== null && user.position) {
       case "actor":
-        testActor(latestPayload);
+        actorRegistration(latestPayload as ActorExtras);
         break;
       case "director":
         // | soon
@@ -56,12 +55,11 @@ const Page = () => {
         // | soon
         break;
       case "producer":
-        // | soon
+        console.table(latestPayload);
         break;
       default:
         break;
     }
-    console.log(latestPayload);
   }, [latestPayload]);
 
   const onButtonClick = () => {

@@ -1,12 +1,26 @@
 import { useState } from "react";
 import { FormProps } from "@/components/ui/forms/role-specific-form-selector";
+import { useDataContext } from "@/context/data-context";
 import FileButton from "@/components/ui/buttons/single-buttons/file-button";
 import { FloatingWindow } from "@/components/ui/overlays/floating-window"; // client component
 import { ProductionForm } from "@/components/ui/forms/production-form";
 
+export interface ProducerExtras {
+  testcase: string;
+}
+
 const ProducerForm = ({ user }: FormProps) => {
   const [windowOpen, setWindowOpen] = useState<boolean>();
+  const [producerExtras, setProducerExtras] = useState<ProducerExtras>({
+    testcase: "cameleon",
+  });
+  const { upliftData } = useDataContext();
 
+  // | handlechenge here
+
+  const handleSubmit = () => {
+    upliftData(producerExtras);
+  };
   return (
     <div>
       {windowOpen && (
@@ -50,11 +64,7 @@ const ProducerForm = ({ user }: FormProps) => {
             title="Create production"
             onClick={() => setWindowOpen(true)}
           />
-          <button
-            type="button"
-            className="submit"
-            onClick={() => console.log("Submit")}
-          >
+          <button type="button" className="submit" onClick={handleSubmit}>
             <span className="text-white">Register your account</span>
             <span className="text-black">Enjoy your stay</span>
           </button>

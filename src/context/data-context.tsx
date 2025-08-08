@@ -1,7 +1,8 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import { ActorExtras } from "@/components/ui/forms/actor-form";
+import { ProducerExtras } from "@/components/ui/forms/producer-form";
 
-export type ChildPayload = ActorExtras; // | BShape | CShape;
+export type ChildPayload = ActorExtras | ProducerExtras; // | BShape | CShape;
 
 interface DataContextType {
   upliftData: (payload: ChildPayload) => void;
