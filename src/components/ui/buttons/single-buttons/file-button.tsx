@@ -3,13 +3,18 @@ import styled from "styled-components";
 
 interface FileButtonProps {
   title: string;
+  disabled: boolean;
   onClick: () => void;
 }
 
 const FileButton = (props: FileButtonProps) => {
   return (
     <StyledWrapper>
-      <button className="continue-application" onClick={props.onClick}>
+      <button
+        className="continue-application"
+        onClick={props.onClick}
+        disabled={props.disabled}
+      >
         <div>
           <div className="pencil" />
           <div className="folder">
@@ -236,6 +241,20 @@ const StyledWrapper = styled.div`
     --pby: -3px;
     --pbd: 0.15s;
     --pex: -24px;
+  }
+
+  .continue-application[disabled] {
+    filter: grayscale(100%);
+    pointer-events: none;
+    cursor: not-allowed;
+    transition: none !important;
+  }
+
+  .continue-application[disabled] *,
+  .continue-application[disabled]::before,
+  .continue-application[disabled]::after {
+    animation: none !important;
+    transition: none !important;
   }
 `;
 
