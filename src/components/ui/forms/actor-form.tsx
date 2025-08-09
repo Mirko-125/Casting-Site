@@ -19,7 +19,7 @@ const ActorForm = ({ user }: FormProps) => {
   });
   const { upliftData } = useDataContext();
 
-  // Use context to lift the data rather than passing everything here
+  // | Use context to lift the data rather than passing everything here
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>

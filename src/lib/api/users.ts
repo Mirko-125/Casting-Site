@@ -1,4 +1,4 @@
-import { address, registerBase, returnBase, uploadProfilePic, downloadProfilePic, registerActor } from "@/misc/routes"
+import { address, registerBase, returnBase, uploadProfilePic, downloadProfilePic, registerActor, registerProducer, registerCastingDirector, registerDirector } from "@/misc/routes"
 import { formatDateString } from "@/lib/helpers/datehelper";
 
 export interface BaseUser {
@@ -38,10 +38,23 @@ export interface BaseUserCache {
 }
 
 export interface ActorDTO {
-    height: number;
-    weight: number;
-    bio: string;
-    dateOfBirth: string; 
+  height: number;
+  weight: number;
+  bio: string;
+  dateOfBirth: string; 
+}
+
+export interface ProducerDTO {
+  bio: string;
+}
+
+export interface CastingDirectorDTO {
+  productionCode: string;
+}
+
+export interface DirectorDTO {
+  bio: string;
+  dateOfBirth: string; 
 }
 
 export const registerBaseUser = async (
@@ -147,3 +160,74 @@ export const registerActorUser = async (
         throw new Error((error as Error).message || "Network error");
     }
 }
+
+export const registerProducerUser = async (
+  productionId: string,
+  dto: ProducerDTO
+): Promise<Response> => {
+  const res = await fetch(address + registerProducer + "/" + productionId, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(dto),
+  });
+
+  if (!res.ok) {
+    let errMsg = "Failed to register producer";
+    try {
+      const errJson = await res.json();
+      if (errJson?.message) errMsg = errJson.message;
+    } catch {
+    }
+    throw new Error(errMsg);
+  }
+  return res;
+};
+
+export const registerCastingDirectorUser = async (
+  productionId: string,
+  dto: CastingDirectorDTO
+): Promise<Response> => {
+
+  const res = await fetch(address + registerCastingDirector + "/" + productionId, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(dto),
+  });
+
+  if (!res.ok) {
+    let errMsg = "Failed to register casting director";
+    try {
+      const errJson = await res.json();
+      if (errJson?.message) errMsg = errJson.message;
+    } catch {
+    }
+    throw new Error(errMsg);
+  }
+  return res;
+};
+
+export const registerDirectorUser = async (
+  productionId: string,
+  dto: DirectorDTO
+): Promise<Response> => {
+
+  const res = await fetch(address + registerDirector + "/" + productionId, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(dto),
+  });
+
+  if (!res.ok) {
+    let errMsg = "Failed to register casting director";
+    try {
+      const errJson = await res.json();
+      if (errJson?.message) errMsg = errJson.message;
+    } catch {
+    }
+    throw new Error(errMsg);
+  }
+  return res;
+};

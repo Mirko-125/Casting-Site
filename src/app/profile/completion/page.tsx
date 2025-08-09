@@ -7,6 +7,12 @@ import {
   getUserByRegistrationToken,
   uploadProfilePhoto,
   getProfilePhoto,
+  ProducerDTO,
+  registerActorUser,
+  registerProducerUser,
+  CastingDirectorDTO,
+  registerCastingDirectorUser,
+  registerDirectorUser,
 } from "@/lib/api/users";
 import { useSessionStorage } from "@/hooks/sessionstorage";
 import "flag-icons/css/flag-icons.min.css";
@@ -18,8 +24,10 @@ import {
   UserRole,
 } from "@/components/ui/forms/role-specific-form-selector";
 import { useDataContext } from "@/context/data-context";
-import { registerActorUser } from "@/lib/api/users";
 import { ActorExtras } from "@/components/ui/forms/actor-form";
+import { ProducerExtras } from "@/components/ui/forms/producer-form";
+import { CastingDirectorExtras } from "@/components/ui/forms/casting-director-form";
+import { DirectorExtras } from "@/components/ui/forms/director-form";
 
 const Page = () => {
   const [token] = useSessionStorage("registration_token", "");
@@ -34,7 +42,7 @@ const Page = () => {
     try {
       const response = await registerActorUser(payload);
       if (response.ok) {
-        console.log("check azure data studio");
+        sessionStorage.clear();
         router.push("/");
       }
     } catch (error) {
@@ -42,25 +50,80 @@ const Page = () => {
     }
   };
 
+  const producerRegistration = async (payload: ProducerExtras) => {
+    try {
+      const { pid, bio } = payload;
+      if (!pid) throw new Error("Missing pid");
+      const dto: ProducerDTO = { bio };
+      const response = await registerProducerUser(pid, dto);
+      const saved = await response.json();
+      sessionStorage.removeItem("productionId");
+      sessionStorage.clear();
+      router.push("/");
+    } catch (error) {
+      console.error("Registration failed:", error);
+    }
+  };
+
+  const castingDirectorRegistration = async (
+    payload: CastingDirectorExtras
+  ) => {
+    try {
+      const { pid, productionCode } = payload;
+      if (!pid) throw new Error("Missing pid");
+      const dto: CastingDirectorDTO = { productionCode };
+      const response = await registerCastingDirectorUser(pid, dto);
+      const saved = await response.json();
+      sessionStorage.removeItem("productionId");
+      sessionStorage.clear();
+      router.push("/");
+    } catch (error) {
+      console.error("Registration failed:", error);
+    }
+  };
+
+  const directorRegistration = async (payload: DirectorExtras) => {
+    try {
+      const { pid, ...dto } = payload;
+      if (!pid) throw new Error("Missing pid");
+      const response = await registerDirectorUser(pid, dto);
+      const saved = await response.json();
+      sessionStorage.removeItem("productionId");
+      sessionStorage.clear();
+      router.push("/");
+    } catch (error) {
+      console.error("Registration failed:", error);
+    }
+  };
+
   useEffect(() => {
     if (!latestPayload) return;
-    switch (user !== null && user.position) {
+    if (!user) {
+      console.warn("latestPayload arrived but user not ready yet");
+      return;
+    }
+    const role = String(user.position).toLowerCase();
+    console.debug("running role-specific registration", {
+      role,
+      latestPayload,
+    });
+    switch (role) {
       case "actor":
         actorRegistration(latestPayload as ActorExtras);
         break;
       case "director":
-        // | soon
+        directorRegistration(latestPayload as DirectorExtras);
         break;
       case "castingdirector":
-        // | soon
+        castingDirectorRegistration(latestPayload as CastingDirectorExtras);
         break;
       case "producer":
-        console.table(latestPayload);
+        producerRegistration(latestPayload as ProducerExtras);
         break;
       default:
         break;
     }
-  }, [latestPayload]);
+  }, [latestPayload, user]);
 
   const onButtonClick = () => {
     fileInputRef.current?.click();

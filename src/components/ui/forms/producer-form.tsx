@@ -9,7 +9,8 @@ import { DropdownMenu } from "@/components/ui/menus/dropdown-menu";
 import { getProductionPairs } from "@/lib/api/productions";
 
 export interface ProducerExtras {
-  testcase: string;
+  bio: string;
+  pid: string;
 }
 
 const ProducerForm = ({ user }: FormProps) => {
@@ -20,10 +21,12 @@ const ProducerForm = ({ user }: FormProps) => {
   });
   const [productionId, setProductionId] = useState<string>(() => {
     return sessionStorage.getItem("productionId") || "";
-  });
+  }); // | DO NOT TOUCH
   const [producerExtras, setProducerExtras] = useState<ProducerExtras>({
-    testcase: "cameleon",
+    bio: "",
+    pid: "",
   });
+
   const [hasToMakeProd, setHasToMakeProd] = useState<boolean>(() => {
     const stored = sessionStorage.getItem("hasToMakeProd");
     return stored ? JSON.parse(stored) : true;
@@ -34,22 +37,30 @@ const ProducerForm = ({ user }: FormProps) => {
 
   const { upliftData } = useDataContext();
 
-  // | handlechenge here
+  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    event.preventDefault();
+    const { name, value } = event.target;
+    setProducerExtras((fd) => ({ ...fd, [name]: value }));
+  };
 
   const handleSubmit = () => {
+    const prodId: string | null = sessionStorage.getItem("productionId");
+    if (prodId) {
+      producerExtras.pid = prodId;
+    }
     upliftData(producerExtras);
   };
 
   const handleSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
     event.preventDefault();
     const selectedValue = event.target.value;
+    setProductionId(selectedValue);
     setIsSelected(selectedValue !== "Unselected");
-    console.log(selectedValue);
+    sessionStorage.setItem("productionId", selectedValue);
   };
 
   const handleCallback = (pid: string) => {
     setProductionId(pid);
-    console.log(pid);
     if (pid) {
       sessionStorage.setItem("productionId", pid);
       setWindowOpen(false);
@@ -98,6 +109,7 @@ const ProducerForm = ({ user }: FormProps) => {
               rows={5}
               placeholder="Write your bio here..."
               maxLength={2000}
+              onChange={handleChange}
             />
             <span className="iborder"></span>
           </div>
