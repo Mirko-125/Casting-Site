@@ -95,6 +95,7 @@ const SignUp = (props: SignUpProps) => {
             record={countries}
             title="Select a country"
             change={selectChange}
+            disabled={false}
           />
           <RadioButtonsHorisontal
             title="Gender"

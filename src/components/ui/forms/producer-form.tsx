@@ -1,24 +1,37 @@
-import { useState } from "react";
+"use client";
+import { useState, useEffect } from "react";
 import { FormProps } from "@/components/ui/forms/role-specific-form-selector";
 import { useDataContext } from "@/context/data-context";
 import FileButton from "@/components/ui/buttons/single-buttons/file-button";
 import { FloatingWindow } from "@/components/ui/overlays/floating-window"; // client component
 import { ProductionForm } from "@/components/ui/forms/production-form";
 import { DropdownMenu } from "@/components/ui/menus/dropdown-menu";
-import { productions } from "@/dump/productions";
+import { getProductionPairs } from "@/lib/api/productions";
 
 export interface ProducerExtras {
   testcase: string;
 }
 
 const ProducerForm = ({ user }: FormProps) => {
-  const [windowOpen, setWindowOpen] = useState<boolean>();
-  const [isSelected, setIsSelected] = useState<boolean>();
-  const [productionIsMade, setProductionIsMade] = useState<boolean>(); // | when prod is succesful
-  const [productionId, setProductionId] = useState<string>();
+  const [windowOpen, setWindowOpen] = useState<boolean>(false);
+  const [isSelected, setIsSelected] = useState<boolean>(() => {
+    const stored = sessionStorage.getItem("isSelected");
+    return stored ? JSON.parse(stored) : false;
+  });
+  const [productionId, setProductionId] = useState<string>(() => {
+    return sessionStorage.getItem("productionId") || "";
+  });
   const [producerExtras, setProducerExtras] = useState<ProducerExtras>({
     testcase: "cameleon",
   });
+  const [hasToMakeProd, setHasToMakeProd] = useState<boolean>(() => {
+    const stored = sessionStorage.getItem("hasToMakeProd");
+    return stored ? JSON.parse(stored) : true;
+  });
+  const [productionPairs, setProductionPairs] = useState<
+    Record<string, string>
+  >({});
+
   const { upliftData } = useDataContext();
 
   // | handlechenge here
@@ -37,7 +50,28 @@ const ProducerForm = ({ user }: FormProps) => {
   const handleCallback = (pid: string) => {
     setProductionId(pid);
     console.log(pid);
+    if (pid) {
+      sessionStorage.setItem("productionId", pid);
+      setWindowOpen(false);
+      setHasToMakeProd(false);
+    }
   };
+
+  useEffect(() => {
+    sessionStorage.setItem("isSelected", JSON.stringify(isSelected));
+  }, [isSelected]);
+
+  useEffect(() => {
+    sessionStorage.setItem("hasToMakeProd", JSON.stringify(hasToMakeProd));
+  }, [hasToMakeProd]);
+
+  useEffect(() => {
+    getProductionPairs()
+      .then(setProductionPairs)
+      .catch((error) =>
+        console.error("Failed to load production pairs:", error)
+      );
+  }, []);
 
   return (
     <div>
@@ -68,14 +102,15 @@ const ProducerForm = ({ user }: FormProps) => {
             <span className="iborder"></span>
           </div>
           <DropdownMenu
-            record={productions}
+            record={productionPairs}
             title="Belong to a production?"
             change={handleSelect}
+            disabled={!hasToMakeProd}
           />
           <FileButton
             title="Create production"
             onClick={() => setWindowOpen(true)}
-            disabled={isSelected as boolean}
+            disabled={!hasToMakeProd || isSelected}
           />
           <button type="button" className="submit" onClick={handleSubmit}>
             <span className="text-white">Register your account</span>
